@@ -1,0 +1,266 @@
+* {
+box-sizing: border-box;
+}
+
+body {
+margin: 0;
+font-family: "Segoe UI", Arial, sans-serif;
+background-color: #f4f1ec;
+color: #2b2b2b;
+}
+
+header {
+padding: 24px;
+text-align: center;
+}
+
+h1 {
+margin: 0;
+font-size: 1.8rem;
+}
+
+.board {
+display: flex;
+gap: 16px;
+padding: 0 24px 24px;
+overflow-x: auto;
+}
+
+.column {
+flex: 1 0 220px;
+background-color: #ffffff;
+border-radius: 12px;
+padding: 16px;
+min-height: 400px;
+}
+
+.column h2 {
+margin: 0 0 12px;
+font-size: 1rem;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+.cards {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+.card {
+background-color: #faf8f5;
+border-radius: 8px;
+border-left: 6px solid #999999;
+padding: 12px;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.card h3 {
+margin: 0 0 4px;
+font-size: 1rem;
+}
+
+.card p {
+margin: 0 0 4px;
+font-size: 0.85rem;
+color: #666666;
+}
+
+.card a {
+font-size: 0.75rem;
+color: #888888;
+}
+
+.card a:hover {
+color: #2b2b2b;
+}
+
+#a-envoyer .card { border-left-color: #9e9e9e; }
+#envoyee .card   { border-left-color: #3b82f6; }
+#relancee .card  { border-left-color: #f59e0b; }
+#entretien .card { border-left-color: #8b5cf6; }
+#acceptee .card  { border-left-color: #22c55e; }
+#refusee .card   { border-left-color: #ef4444; }
+
+
+.badge {
+display: inline-block;
+margin: 4px 0 8px;
+padding: 2px 8px;
+border-radius: 999px;
+font-size: 0.7rem;
+background-color: #e8e4dc;
+color: #555555;
+}
+
+.badge-relance {
+background-color: #fde9c8;
+color: #9a5b00;
+}
+
+header .btn-principal {
+margin-top: 12px;
+}
+
+.btn-principal {
+background-color: #2b2b2b;
+color: #ffffff;
+border: none;
+border-radius: 8px;
+padding: 8px 16px;
+font-size: 0.9rem;
+cursor: pointer;
+}
+
+.btn-principal:hover {
+background-color: #444444;
+}
+
+dialog {
+border: none;
+border-radius: 12px;
+padding: 24px;
+width: min(420px, 90vw);
+}
+
+dialog::backdrop {
+background-color: rgba(0, 0, 0, 0.4);
+}
+
+dialog h2 {
+margin: 0 0 16px;
+}
+
+dialog label {
+display: block;
+margin-bottom: 12px;
+font-size: 0.85rem;
+}
+
+dialog input,
+dialog select,
+dialog textarea {
+display: block;
+width: 100%;
+margin-top: 4px;
+padding: 8px;
+border: 1px solid #cccccc;
+border-radius: 6px;
+font-family: inherit;
+font-size: 0.9rem;
+}
+
+.boutons-form {
+display: flex;
+justify-content: flex-end;
+gap: 8px;
+margin-top: 16px;
+}
+
+.boutons-form button {
+padding: 8px 16px;
+border-radius: 8px;
+border: 1px solid #cccccc;
+background-color: #ffffff;
+cursor: pointer;
+}
+
+.boutons-form .btn-principal {
+border: none;
+background-color: #2b2b2b;
+}
+
+.card {
+position: relative;
+cursor: grab;
+}
+
+.card.en-deplacement {
+opacity: 0.4;
+}
+
+.column.survol {
+background-color: #ece8e0;
+}
+
+.notes {
+margin-top: 8px;
+padding-top: 8px;
+border-top: 1px dashed #cccccc;
+white-space: pre-wrap;
+}
+
+.btn-supprimer {
+position: absolute;
+top: 6px;
+right: 8px;
+border: none;
+background: none;
+font-size: 1.1rem;
+color: #aaaaaa;
+cursor: pointer;
+}
+
+.btn-supprimer:hover {
+color: #ef4444;
+}
+
+.barre-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.barre-actions .btn-principal {
+  margin-top: 0;
+}
+
+.btn-secondaire {
+  background-color: #ffffff;
+  color: #2b2b2b;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.btn-secondaire:hover {
+  background-color: #ece8e0;
+}
+
+.mode-demo {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  color: #9a5b00;
+}
+
+.compteur {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background-color: #e8e4dc;
+  font-size: 0.75rem;
+  letter-spacing: 0;
+}
+
+.card h3 {
+  padding-right: 44px;
+}
+
+.btn-modifier {
+  position: absolute;
+  top: 6px;
+  right: 28px;
+  border: none;
+  background: none;
+  font-size: 0.95rem;
+  color: #aaaaaa;
+  cursor: pointer;
+}
+
+.btn-modifier:hover {
+color: #2b2b2b;
+}

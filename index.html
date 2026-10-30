@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanban PFE</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Mes candidatures PFE</h1>
+    <div class="barre-actions">
+    <button id="btn-ajouter" class="btn-principal">+ Nouvelle candidature</button>
+    <button id="btn-exporter" class="btn-secondaire">Exporter</button>
+    <button id="btn-importer" class="btn-secondaire">Importer</button>
+    <input type="file" id="fichier-import" accept=".json" hidden>
+    </div>
+</header>
+
+<main class="board">
+
+    <section class="column" id="a-envoyer">
+    <h2>À envoyer</h2>
+    <div class="cards"></div>
+    </section>
+
+    <section class="column" id="envoyee">
+    <h2>Envoyée</h2>
+    <div class="cards"></div>
+    </section>
+
+    <section class="column" id="relancee">
+    <h2>Relancée</h2>
+    <div class="cards"></div>
+    </section>
+
+    <section class="column" id="entretien">
+    <h2>Entretien</h2>
+    <div class="cards"></div>
+    </section>
+
+    <section class="column" id="acceptee">
+    <h2>Acceptée</h2>
+    <div class="cards"></div>
+    </section>
+
+    <section class="column" id="refusee">
+    <h2>Refusée</h2>
+    <div class="cards"></div>
+    </section>
+
+</main>
+<dialog id="fenetre-ajout">
+    <form id="formulaire">
+<h2 id="titre-formulaire">Nouvelle candidature</h2>
+
+<label>Entreprise
+        <input type="text" id="champ-entreprise" required>
+</label>
+
+<label>Poste
+        <input type="text" id="champ-poste" required>
+</label>
+
+<label>Date
+        <input type="date" id="champ-date" required>
+</label>
+
+<label>Colonne
+        <select id="champ-statut">
+<option value="a-envoyer">À envoyer</option>
+<option value="envoyee">Envoyée</option>
+<option value="relancee">Relancée</option>
+<option value="entretien">Entretien</option>
+<option value="acceptee">Acceptée</option>
+<option value="refusee">Refusée</option>
+        </select>
+    </label>
+
+    <label>Lien de l'offre
+        <input type="url" id="champ-lien" placeholder="https://...">
+    </label>
+
+<label>Notes
+        <textarea id="champ-notes" rows="3"></textarea>
+</label>
+
+<div class="boutons-form">
+        <button type="button" id="btn-annuler">Annuler</button>
+        <button type="submit" class="btn-principal">Enregistrer</button>
+</div>
+    </form>
+</dialog>
+
+<script src="script.js"></script>
+</body>
+</html>
