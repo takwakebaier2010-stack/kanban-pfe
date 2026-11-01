@@ -264,3 +264,75 @@ color: #ef4444;
 .btn-modifier:hover {
 color: #2b2b2b;
 }
+
+[hidden] {
+  display: none !important;
+}
+
+.barre-utilisateur {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #555555;
+}
+
+.auth {
+  max-width: 380px;
+  margin: 0 auto 24px;
+  padding: 0 16px;
+}
+
+.auth form {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.auth h2 {
+  margin: 0 0 16px;
+}
+
+.auth label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+
+.auth input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.auth .btn-principal {
+  width: 100%;
+}
+
+.message-auth {
+  margin: 0 0 12px;
+  font-size: 0.85rem;
+  color: #b91c1c;
+}
+
+.bascule-auth {
+  margin: 16px 0 0;
+  text-align: center;
+}
+
+.lien-bouton {
+  background: none;
+  border: none;
+  color: #555555;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
