@@ -1,15 +1,8 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
+require __DIR__ . '/commun.php';
 
 const STATUTS = ['a-envoyer', 'envoyee', 'relancee', 'entretien', 'acceptee', 'refusee'];
 const COLONNES_SQL = 'id, entreprise, poste, date_action AS date, lien, notes, statut';
-
-function reponse(int $code, $contenu): void
-{
-    http_response_code($code);
-    echo json_encode($contenu, JSON_UNESCAPED_UNICODE);
-    exit;
-}
 
 function formater(array $ligne): array
 {
@@ -58,56 +51,48 @@ function valider(array $donnees): ?array
     ];
 }
 
-function lireLigne(PDO $pdo, int $id): ?array
+function lireLigne(PDO $pdo, int $id, int $utilisateurId): ?array
 {
-    $requete = $pdo->prepare('SELECT ' . COLONNES_SQL . ' FROM candidatures WHERE id = :id');
-    $requete->execute(['id' => $id]);
+    $requete = $pdo->prepare(
+        'SELECT ' . COLONNES_SQL . ' FROM candidatures
+         WHERE id = :id AND utilisateur_id = :utilisateur_id'
+    );
+    $requete->execute(['id' => $id, 'utilisateur_id' => $utilisateurId]);
     $ligne = $requete->fetch();
     return $ligne ? formater($ligne) : null;
 }
 
-$config = require __DIR__ . '/config.php';
-
-try {
-    $pdo = new PDO(
-        "mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4",
-        $config['user'],
-        $config['password'],
-        [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]
-    );
-} catch (PDOException $e) {
-    reponse(500, ['erreur' => 'Connexion à la base de données impossible.']);
-}
+$utilisateurId = exigerConnexion();
+$pdo = connecter();
 
 $methode = $_SERVER['REQUEST_METHOD'];
 $id = (int) ($_GET['id'] ?? 0);
-$corps = json_decode(file_get_contents('php://input'), true);
-if (!is_array($corps)) {
-    $corps = [];
-}
+$corps = corpsJson();
 
 switch ($methode) {
     case 'GET':
-        $lignes = $pdo->query('SELECT ' . COLONNES_SQL . ' FROM candidatures ORDER BY id')->fetchAll();
-        reponse(200, array_map('formater', $lignes));
+        $requete = $pdo->prepare(
+            'SELECT ' . COLONNES_SQL . ' FROM candidatures
+             WHERE utilisateur_id = :utilisateur_id ORDER BY id'
+        );
+        $requete->execute(['utilisateur_id' => $utilisateurId]);
+        reponse(200, array_map('formater', $requete->fetchAll()));
 
     case 'POST':
         $donnees = valider($corps);
         if ($donnees === null) {
             reponse(400, ['erreur' => 'Données invalides.']);
         }
+        $donnees['utilisateur_id'] = $utilisateurId;
         $requete = $pdo->prepare(
-            'INSERT INTO candidatures (entreprise, poste, date_action, lien, notes, statut)
-             VALUES (:entreprise, :poste, :date, :lien, :notes, :statut)'
+            'INSERT INTO candidatures (utilisateur_id, entreprise, poste, date_action, lien, notes, statut)
+             VALUES (:utilisateur_id, :entreprise, :poste, :date, :lien, :notes, :statut)'
         );
         $requete->execute($donnees);
-        reponse(201, lireLigne($pdo, (int) $pdo->lastInsertId()));
+        reponse(201, lireLigne($pdo, (int) $pdo->lastInsertId(), $utilisateurId));
 
     case 'PUT':
-        if ($id <= 0 || lireLigne($pdo, $id) === null) {
+        if ($id <= 0 || lireLigne($pdo, $id, $utilisateurId) === null) {
             reponse(404, ['erreur' => 'Candidature introuvable.']);
         }
         $donnees = valider($corps);
@@ -115,21 +100,24 @@ switch ($methode) {
             reponse(400, ['erreur' => 'Données invalides.']);
         }
         $donnees['id'] = $id;
+        $donnees['utilisateur_id'] = $utilisateurId;
         $requete = $pdo->prepare(
             'UPDATE candidatures
              SET entreprise = :entreprise, poste = :poste, date_action = :date,
                  lien = :lien, notes = :notes, statut = :statut
-             WHERE id = :id'
+             WHERE id = :id AND utilisateur_id = :utilisateur_id'
         );
         $requete->execute($donnees);
-        reponse(200, lireLigne($pdo, $id));
+        reponse(200, lireLigne($pdo, $id, $utilisateurId));
 
     case 'DELETE':
         if ($id <= 0) {
             reponse(404, ['erreur' => 'Candidature introuvable.']);
         }
-        $requete = $pdo->prepare('DELETE FROM candidatures WHERE id = :id');
-        $requete->execute(['id' => $id]);
+        $requete = $pdo->prepare(
+            'DELETE FROM candidatures WHERE id = :id AND utilisateur_id = :utilisateur_id'
+        );
+        $requete->execute(['id' => $id, 'utilisateur_id' => $utilisateurId]);
         if ($requete->rowCount() === 0) {
             reponse(404, ['erreur' => 'Candidature introuvable.']);
         }
