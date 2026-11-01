@@ -1,63 +1,95 @@
-# Kanban PFE
+# Kanban PFE (version PHP / MySQL)
 
-Application web pour suivre mes candidatures de stage PFE sous forme de tableau kanban.
+Application web pour suivre mes candidatures de stage PFE sous forme de tableau kanban. Cette version enregistre les données dans une **base MySQL**, via une **API PHP**.
 
-**[Voir la démo en ligne](https://takwakebaier2010-stack.github.io/kanban-pfe/?demo)** (données fictives)
+> Une version 100 % JavaScript, sans serveur, est disponible sur la [branche `main`](https://github.com/takwakebaier2010-stack/kanban-pfe) avec une [démo en ligne](https://takwakebaier2010-stack.github.io/kanban-pfe/?demo).
 
 ![Tableau kanban](screenshots/tableau.png)
 
-## Pourquoi ce projet
+## Fonctionnement
 
-Pendant ma recherche de stage PFE, je candidate à plusieurs entreprises en même temps. J'ai créé cet outil pour voir en un coup d'œil où en est chaque candidature et savoir quand relancer. Je l'utilise réellement.
+```
+Navigateur (script.js)  →  api.php  →  MySQL (base kanban_pfe)
+```
+
+- `script.js` envoie des requêtes `fetch` à `api.php`.
+- `api.php` vérifie les données et parle à MySQL avec PDO.
+- La base garde les candidatures même si on ferme le navigateur.
 
 ## Fonctionnalités
 
 - 6 colonnes : à envoyer, envoyée, relancée, entretien, acceptée, refusée
-- Glisser-déposer des cartes d'une colonne à l'autre
-- Une carte contient : entreprise, poste, date de dernière action, lien de l'offre, notes
-- Badge « il y a X jours » qui passe en orange après 7 jours, pour penser à relancer
-- Bande de couleur par colonne
+- Glisser-déposer des cartes (la date de dernière action est mise à jour)
 - Ajout, modification et suppression d'une candidature
+- Badge « il y a X jours » qui passe en orange après 7 jours
 - Compteur de cartes par colonne
-- Sauvegarde automatique dans le navigateur (localStorage)
-- Export et import d'une sauvegarde au format JSON
-- Mode démo avec des données fictives (`?demo`)
+- Export de la liste au format JSON
 
 ![Formulaire d'ajout](screenshots/formulaire.png)
 
 ## Technologies
 
-- HTML5 (dont l'élément `<dialog>`)
-- CSS3 (flexbox)
-- JavaScript, sans bibliothèque ni framework
+- HTML5, CSS3, JavaScript (fetch, async/await)
+- PHP 8 avec PDO
+- MySQL
 
-## Lancer le projet en local
+## API
 
-1. Télécharger ou cloner le dépôt :
+Toutes les routes sont sur `api.php`. Les données sont échangées en JSON.
+
+| Méthode | Adresse | Action |
+|---|---|---|
+| GET | `api.php` | Liste des candidatures |
+| POST | `api.php` | Ajoute une candidature |
+| PUT | `api.php?id=3` | Modifie la candidature 3 |
+| DELETE | `api.php?id=3` | Supprime la candidature 3 |
+
+## Installation en local
+
+Prérequis : WampServer ou XAMPP (PHP 8 et MySQL), et Git.
+
+1. Cloner la branche :
    ```bash
-   git clone https://github.com/takwakebaier2010-stack/kanban-pfe.git
+   git clone --branch php-mysql https://github.com/takwakebaier2010-stack/kanban-pfe.git
+   cd kanban-pfe
    ```
-2. Ouvrir le fichier `index.html` dans un navigateur.
-
-Aucune installation n'est nécessaire.
+2. Démarrer MySQL (WampServer ou XAMPP).
+3. Créer la base : ouvrir `http://localhost/phpmyadmin`, onglet **SQL**, coller le contenu de `database.sql`, puis **Exécuter**.
+4. Créer le fichier de configuration à partir du modèle :
+   ```bash
+   copy config.example.php config.php
+   ```
+   Adapter `config.php` si besoin (par défaut : utilisateur `root`, mot de passe vide).
+5. Lancer le serveur PHP intégré dans le dossier du projet :
+   ```bash
+   php -S localhost:8000
+   ```
+   Avec WampServer, utiliser le chemin complet de `php.exe`, par exemple `C:\wamp64\bin\php\php8.3.14\php.exe -S localhost:8000`.
+6. Ouvrir `http://localhost:8000`.
 
 ## Structure du projet
 
 ```
 kanban-pfe/
-├── index.html      structure de la page et formulaire
-├── style.css       apparence
-├── script.js       logique : cartes, déplacement, sauvegarde
-└── screenshots/    captures d'écran pour ce README
+├── index.html            structure de la page et formulaire
+├── style.css             apparence
+├── script.js             interface : cartes, déplacement, appels à l'API
+├── api.php               API PHP (lecture, ajout, modification, suppression)
+├── database.sql          création de la base et de la table
+├── config.example.php    modèle de configuration (config.php est ignoré par Git)
+└── screenshots/          captures d'écran
 ```
 
-## À propos des données
+## Sécurité
 
-Les candidatures sont enregistrées **uniquement dans le navigateur** de la personne qui utilise l'application. Rien n'est envoyé à un serveur. Vider les données du navigateur efface les candidatures : le bouton **Exporter** permet de faire une sauvegarde.
+- Requêtes SQL **préparées** (PDO) : protection contre les injections SQL.
+- Les données sont **validées côté serveur** (statut, date, longueurs, lien en `http` ou `https`).
+- `config.php` n'est pas versionné.
+- Cette version est prévue pour un **usage local** : elle n'a pas d'authentification. Il ne faut pas l'exposer sur internet telle quelle.
 
 ## Améliorations prévues
 
-- [ ] Version avec PHP et MySQL pour stocker les données sur un serveur
+- [ ] Authentification (connexion par compte)
 - [ ] Recherche et filtres
 - [ ] Rappels de relance
 
