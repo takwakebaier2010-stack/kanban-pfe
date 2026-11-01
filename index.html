@@ -8,15 +8,41 @@
 </head>
 <body>
 
-<header>
+  <header>
     <h1>Mes candidatures PFE</h1>
-    <div class="barre-actions">
-    <button id="btn-ajouter" class="btn-principal">+ Nouvelle candidature</button>
-    <button id="btn-exporter" class="btn-secondaire">Exporter</button>
+    <div id="barre-utilisateur" class="barre-utilisateur" hidden>
+      <span id="email-utilisateur"></span>
+      <button id="btn-deconnexion" class="btn-secondaire">Se déconnecter</button>
     </div>
-</header>
+    <div id="barre-actions" class="barre-actions" hidden>
+      <button id="btn-ajouter" class="btn-principal">+ Nouvelle candidature</button>
+      <button id="btn-exporter" class="btn-secondaire">Exporter</button>
+    </div>
+  </header>
 
-<main class="board">
+  <section id="ecran-connexion" class="auth" hidden>
+    <form id="formulaire-auth">
+      <h2 id="titre-auth">Connexion</h2>
+
+      <label>Email
+        <input type="email" id="auth-email" required autocomplete="email">
+      </label>
+
+      <label>Mot de passe
+        <input type="password" id="auth-mdp" required minlength="8" maxlength="72" autocomplete="current-password">
+      </label>
+
+      <p id="message-auth" class="message-auth" role="alert" hidden></p>
+
+      <button type="submit" id="btn-valider-auth" class="btn-principal">Se connecter</button>
+
+      <p class="bascule-auth">
+        <button type="button" id="btn-basculer-auth" class="lien-bouton">Pas de compte ? Créer un compte</button>
+      </p>
+    </form>
+  </section>
+
+  <main class="board" id="tableau" hidden>
 
     <section class="column" id="a-envoyer">
     <h2>À envoyer</h2>

@@ -1,12 +1,26 @@
 const API = "api.php";
+const AUTH = "auth.php";
 const colonnes = ["a-envoyer", "envoyee", "relancee", "entretien", "acceptee", "refusee"];
 
 const fenetre = document.getElementById("fenetre-ajout");
 const formulaire = document.getElementById("formulaire");
 const titreFormulaire = document.getElementById("titre-formulaire");
 
+const tableau = document.getElementById("tableau");
+const barreActions = document.getElementById("barre-actions");
+const barreUtilisateur = document.getElementById("barre-utilisateur");
+const ecranConnexion = document.getElementById("ecran-connexion");
+const formulaireAuth = document.getElementById("formulaire-auth");
+const titreAuth = document.getElementById("titre-auth");
+const champEmail = document.getElementById("auth-email");
+const champMdp = document.getElementById("auth-mdp");
+const messageAuth = document.getElementById("message-auth");
+const boutonValiderAuth = document.getElementById("btn-valider-auth");
+const boutonBasculerAuth = document.getElementById("btn-basculer-auth");
+
 let candidatures = [];
 let idEnEdition = null;
+let modeInscription = false;
 
 /* ---------- Outils ---------- */
 
@@ -31,7 +45,7 @@ function texteBadge(jours) {
   return "Il y a " + jours + " jours";
 }
 
-/* ---------- Communication avec l'API ---------- */
+/* ---------- Communication avec le serveur ---------- */
 
 async function appeler(adresse, options) {
   const reponse = await fetch(adresse, options);
@@ -44,8 +58,13 @@ async function appeler(adresse, options) {
   }
 
   if (!reponse.ok) {
+    if (reponse.status === 401 && adresse.startsWith(API)) {
+      afficherConnexion();
+    }
     const message = corps && corps.erreur ? corps.erreur : "Erreur du serveur";
-    throw new Error(message);
+    const erreur = new Error(message);
+    erreur.statut = reponse.status;
+    throw erreur;
   }
   return corps;
 }
@@ -58,12 +77,99 @@ function enJson(methode, donnees) {
   };
 }
 
+function signaler(debut, erreur) {
+  if (erreur.statut === 401) return;
+  alert(debut + erreur.message);
+}
+
 async function chargerCandidatures() {
   try {
     candidatures = await appeler(API);
     afficherCandidatures();
   } catch (erreur) {
-    alert("Impossible de charger les candidatures : " + erreur.message);
+    signaler("Impossible de charger les candidatures : ", erreur);
+  }
+}
+
+/* ---------- Connexion, inscription, déconnexion ---------- */
+
+function afficherConnexion() {
+  candidatures = [];
+  afficherCandidatures();
+  if (fenetre.open) fenetre.close();
+
+  tableau.hidden = true;
+  barreActions.hidden = true;
+  barreUtilisateur.hidden = true;
+  ecranConnexion.hidden = false;
+}
+
+function afficherApplication(email) {
+  document.getElementById("email-utilisateur").textContent = email;
+
+  ecranConnexion.hidden = true;
+  tableau.hidden = false;
+  barreActions.hidden = false;
+  barreUtilisateur.hidden = false;
+
+  chargerCandidatures();
+}
+
+function changerMode(inscription) {
+  modeInscription = inscription;
+  messageAuth.hidden = true;
+
+  titreAuth.textContent = inscription ? "Créer un compte" : "Connexion";
+  boutonValiderAuth.textContent = inscription ? "Créer mon compte" : "Se connecter";
+  boutonBasculerAuth.textContent = inscription
+    ? "Déjà un compte ? Se connecter"
+    : "Pas de compte ? Créer un compte";
+  champMdp.autocomplete = inscription ? "new-password" : "current-password";
+}
+
+boutonBasculerAuth.addEventListener("click", function () {
+  changerMode(!modeInscription);
+});
+
+formulaireAuth.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  messageAuth.hidden = true;
+
+  const action = modeInscription ? "inscription" : "connexion";
+  const donnees = { email: champEmail.value.trim(), mot_de_passe: champMdp.value };
+
+  try {
+    const reponse = await appeler(AUTH + "?action=" + action, enJson("POST", donnees));
+    formulaireAuth.reset();
+    changerMode(false);
+    afficherApplication(reponse.email);
+  } catch (erreur) {
+    messageAuth.textContent = erreur.message;
+    messageAuth.hidden = false;
+  }
+});
+
+document.getElementById("btn-deconnexion").addEventListener("click", async function () {
+  try {
+    await appeler(AUTH + "?action=deconnexion", enJson("POST", {}));
+  } catch (erreur) {
+    console.error(erreur);
+  }
+  afficherConnexion();
+});
+
+async function verifierSession() {
+  try {
+    const etat = await appeler(AUTH + "?action=moi");
+    if (etat.connecte) {
+      afficherApplication(etat.email);
+    } else {
+      afficherConnexion();
+    }
+  } catch (erreur) {
+    afficherConnexion();
+    messageAuth.textContent = "Le serveur ne répond pas : " + erreur.message;
+    messageAuth.hidden = false;
   }
 }
 
@@ -126,7 +232,7 @@ function creerCarte(candidature) {
       });
       afficherCandidatures();
     } catch (erreur) {
-      alert("Suppression impossible : " + erreur.message);
+      signaler("Suppression impossible : ", erreur);
     }
   });
 
@@ -207,7 +313,7 @@ colonnes.forEach(function (idColonne) {
       });
       afficherCandidatures();
     } catch (erreur) {
-      alert("Déplacement impossible : " + erreur.message);
+      signaler("Déplacement impossible : ", erreur);
     }
   });
 });
@@ -262,7 +368,7 @@ formulaire.addEventListener("submit", async function (event) {
     afficherCandidatures();
     fenetre.close();
   } catch (erreur) {
-    alert("Enregistrement impossible : " + erreur.message);
+    signaler("Enregistrement impossible : ", erreur);
   }
 });
 
@@ -283,4 +389,4 @@ document.getElementById("btn-exporter").addEventListener("click", function () {
 
 /* ---------- Démarrage ---------- */
 
-chargerCandidatures();
+verifierSession();
