@@ -4,7 +4,7 @@ Application web pour suivre mes candidatures de stage PFE sous forme de tableau 
 
 **[Voir la démo en ligne](https://takwakebaier2010-stack.github.io/kanban-pfe/?demo)** (données fictives)
 
-**Version avec base de données :** voir la [branche `php-mysql`](https://github.com/takwakebaier2010-stack/kanban-pfe/tree/php-mysql) (PHP + MySQL, à lancer en local).
+**Version avec comptes utilisateurs :** [application en ligne](https://TON-SITE) · [code (branche `php-mysql`)](https://github.com/takwakebaier2010-stack/kanban-pfe/tree/php-mysql)
 
 ![Tableau kanban](screenshots/tableau.png)
 
