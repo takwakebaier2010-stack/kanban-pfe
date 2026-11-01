@@ -1,4 +1,5 @@
 # Kanban PFE (version PHP / MySQL)
+**[Utiliser l'application en ligne](https://TON-SITE)** (inscription gratuite, tes candidatures sont enregistrées dans ton compte)
 
 Application web pour suivre mes candidatures de stage PFE sous forme de tableau kanban. Cette version enregistre les données dans une **base MySQL**, via une **API PHP**.
 
@@ -24,7 +25,7 @@ Navigateur (script.js)  →  api.php  →  MySQL (base kanban_pfe)
 - Badge « il y a X jours » qui passe en orange après 7 jours
 - Compteur de cartes par colonne
 - Export de la liste au format JSON
-
+- Comptes utilisateurs : inscription et connexion, chaque personne ne voit que ses propres candidatures
 ![Formulaire d'ajout](screenshots/formulaire.png)
 
 ## Technologies
@@ -67,6 +68,15 @@ Prérequis : WampServer ou XAMPP (PHP 8 et MySQL), et Git.
    Avec WampServer, utiliser le chemin complet de `php.exe`, par exemple `C:\wamp64\bin\php\php8.3.14\php.exe -S localhost:8000`.
 6. Ouvrir `http://localhost:8000`.
 
+## Mise en ligne
+
+La version avec comptes est hébergée sur un hébergement PHP + MySQL gratuit.
+
+1. Créer une base MySQL chez l'hébergeur, puis exécuter les deux `CREATE TABLE` de `database.sql` dans phpMyAdmin.
+2. Créer un `config.php` avec les identifiants de l'hébergeur (jamais versionné).
+3. Envoyer dans `htdocs` : `index.html`, `style.css`, `script.js`, `api.php`, `auth.php`, `commun.php`, `.htaccess` et `config.php`.
+4. Ouvrir le site en HTTPS.
+
 ## Structure du projet
 
 ```
@@ -78,6 +88,9 @@ kanban-pfe/
 ├── database.sql          création de la base et de la table
 ├── config.example.php    modèle de configuration (config.php est ignoré par Git)
 └── screenshots/          captures d'écran
+├── auth.php              inscription, connexion, déconnexion
+├── commun.php            session, connexion MySQL, fonctions partagées
+├── .htaccess             protège config.php et database.sql
 ```
 
 ## Sécurité
@@ -85,11 +98,16 @@ kanban-pfe/
 - Requêtes SQL **préparées** (PDO) : protection contre les injections SQL.
 - Les données sont **validées côté serveur** (statut, date, longueurs, lien en `http` ou `https`).
 - `config.php` n'est pas versionné.
-- Cette version est prévue pour un **usage local** : elle n'a pas d'authentification. Il ne faut pas l'exposer sur internet telle quelle.
+- Comptes : mots de passe hachés (`password_hash`), sessions PHP avec cookie `HttpOnly`, `SameSite=Lax` et `Secure` en HTTPS.
+- Chaque requête de l'API est filtrée par l'identifiant de l'utilisateur connecté : on ne peut pas lire ni modifier les candidatures d'un autre compte.
+- Limites actuelles : pas de réinitialisation de mot de passe, pas de limitation des tentatives de connexion.
 
 ## Améliorations prévues
 
-- [ ] Authentification (connexion par compte)
+- [x] Comptes utilisateurs
+- [ ] Réinitialisation du mot de passe
+- [ ] Limitation des tentatives de connexion
+- [ ] Suppression de son compte depuis l'application
 - [ ] Recherche et filtres
 - [ ] Rappels de relance
 

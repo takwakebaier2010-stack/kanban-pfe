@@ -336,3 +336,9 @@ color: #2b2b2b;
   cursor: pointer;
   font-size: 0.85rem;
 }
+
+.info-auth {
+  margin: 0 0 12px;
+  font-size: 0.8rem;
+  color: #666666;
+}
